@@ -1,0 +1,8 @@
+main {
+    background-color: rgb(250, 215, 190);
+    position: fixed;
+    height: 100%;
+    width:100%;
+    top: 0;
+    left: 0;
+}

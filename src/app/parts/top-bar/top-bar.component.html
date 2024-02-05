@@ -1,0 +1,18 @@
+<section class="tb">
+    <div class="left">
+        <img src="" alt="WeReader Logo" class="logo">
+    </div>
+    <div class="middle">
+        <ul class="tabs">
+            <li class="tab"><a [routerLink]="['/user/home', user.id]" class="home">HOME</a></li>
+            <li class="tab"><a [routerLink]="['/book/read', book.id]" class="read">READ</a></li>
+            <li class="tab"><a [routerLink]="['/store']" class="store">STORE</a></li>
+            <li class="tab"><a [routerLink]="['/user/library', user.id]" class="library">LIBRARY</a></li>
+        </ul>
+    </div>
+    <div class="right">
+        <a [routerLink]="['/user', user.id]" class="profile">
+            <img [src]="user.pic" [alt]="user.userName" class="profPic">
+        </a>
+    </div>
+</section>
