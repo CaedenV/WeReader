@@ -1,0 +1,68 @@
+.bookCover{
+    width: 500px;
+    height: 800px;
+    border-radius: 5px;
+    object-fit: fill;
+}
+
+.bookTitle{
+    text-align: left;
+    font-family: 'Phudu', cursive;
+    font-size: 50px;
+    margin-left: 12px;
+    color: mediumpurple;
+}
+.bookOpt{
+    float: right;
+    font-size: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    color: mediumpurple;
+    display: flex;
+}
+.bookIcons{
+    margin-left: 15px;
+}
+.bookInfo{
+    margin-left: 15px;
+    display: flex;
+    font-size: 16px;
+    color: rgb(117, 87, 177);
+    flex: 3;
+}
+.split{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.bookDesc{
+    font-size: 18px;
+    line-height: 25px;
+}
+
+.bookCoverTitle{
+    display: flex;
+}
+.bookDesc{
+    margin: 12px;
+}
+
+.revSection{
+    margin-top: 15px;
+}
+
+.revHeader > h1 {
+    font-size: 36px;
+    margin-left: 10px;
+    text-align: center;
+}
+.makeReviewIcon{
+    margin-left: 30px;
+    font-size: 25px;
+    cursor: pointer;
+}
+.revHeader{
+    color: mediumpurple;
+}
+*{
+    color: rgb(101, 75, 151);
+}

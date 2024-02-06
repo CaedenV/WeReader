@@ -1,1 +1,30 @@
-<p>book-desc works!</p>
+<div className="bookWDesc">
+    <img className="coverImg" [src]="book.cover" alt="{{book.title}}" />
+    <div className="bookInfo">
+        <div className="bookGenre">
+            <a className="genreSearch" [routerLink]="['store/genre%', book.genre]">
+                <span className="bookGenre">{{book.genre}}</span>
+            </a>
+        </div>
+        <a [routerLink]="['/details', book.id]" class="bookTitle">
+            {{book.title}}
+        </a>
+        <span className="Pub_Auth">
+            <a className="authorSearch" [routerLink]="['store/author+', book.author]">
+                <span className="bookGenre">{{book.author}}</span>
+            </a> | {{book.pubDate}}
+        </span>
+        <div className="iconContainer">
+            <span className="ratingNum">{{book.avgRating}}</span>
+            <i className="reviewIcon fa-solid fa-star-half-stroke"></i>
+            <i className="singleLen fa-solid fa-scroll"></i>
+
+            <app-wish-btn></app-wish-btn>
+            <app-fav-btn></app-fav-btn>
+            <app-own-btn></app-own-btn>
+        </div>
+        <span className="bookDesc">
+            {{book.desc}}
+        </span>
+    </div>
+</div>

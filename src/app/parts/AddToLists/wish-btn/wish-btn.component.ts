@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './wish-btn.component.html',
-  styleUrl: './wish-btn.component.css'
+  styleUrl: '../addBtn.css'
 })
 export class WishBtnComponent {
 

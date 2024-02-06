@@ -1,0 +1,43 @@
+.bookNDesc{
+    margin: 0px 25px 40px 25px;
+    display: flex;
+}
+
+.coverImg{
+    width: 150px;
+    height: 250px;
+    object-fit:fill;
+    border-radius: 10px;
+}
+
+.bookInfo{
+    color: mediumpurple;
+    font-family: 'Merriweather', serif;
+}
+
+.bookGenre{
+    font-size: 11px;
+    color: mediumpurple;
+    line-height: 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.bookTitle{
+    font-family: 'Phudu', cursive;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.Pub_Auth{
+    font-style: italic;
+    font-size: 17px;
+}
+
+.iconContainer {
+    display: flex;
+    align-items:flex-start;
+}

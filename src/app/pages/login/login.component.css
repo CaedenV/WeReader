@@ -1,0 +1,49 @@
+*{
+    margin: auto;
+    margin-top: 25px;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    padding: 18vh;
+}
+.logSign{
+    color: mediumpurple;
+    font-size: 75px;
+    white-space: nowrap;
+}
+.data{
+    display: flex;
+    flex-direction: column;
+    color: mediumpurple;
+}
+.info{
+    background-color: transparent;
+    border-color: rgb(120, 71, 218);
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-style: groove;
+    color: mediumpurple;
+    font-size: 25px;
+    
+}
+.info:focus{
+    outline: none;
+}
+::placeholder{
+    color: mediumpurple;
+}
+.accntInfo{
+    visibility: hidden;
+}
+button{
+    color: bisque;
+    background-color: mediumpurple;
+    border: 0;
+    margin-inline: 5px;
+    border-radius: 8px;
+    font-size: xx-large;
+    cursor: pointer;
+}
+

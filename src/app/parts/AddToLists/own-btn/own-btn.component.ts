@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './own-btn.component.html',
-  styleUrl: './own-btn.component.css'
+  styleUrl: '../addBtn.css'
 })
 export class OwnBtnComponent {
 

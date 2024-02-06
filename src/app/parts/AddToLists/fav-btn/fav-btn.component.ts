@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './fav-btn.component.html',
-  styleUrl: './fav-btn.component.css'
+  styleUrl: '../addBtn.css'
 })
 export class FavBtnComponent {
 

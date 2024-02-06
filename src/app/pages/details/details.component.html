@@ -1,1 +1,39 @@
-<p>details works!</p>
+<div className="book">
+    <div className="mainContents">
+      <span className="bookCover">
+        <img [src]="book.cover"
+          alt="{{book.title}} Cover"
+          className="bookCover"
+        />
+        <span className="bookDetails">
+          <h1 className="bookTitle"> {{book.title}}</h1>
+          <div className="bookOpt">
+            <app-own-btn></app-own-btn>
+            <app-wish-btn></app-wish-btn>
+          </div>
+          <div className="bookInfo">
+            <span className="bookAuthor"><b>{{book.author}}</b></span>
+            <span className="split">|</span>
+            <span className="bookPub">{{book.pubDate}}</span>
+            <span className="split">|</span>
+            <i className="bookLen fa-solid fa-scroll"></i>
+            <span className="split">|</span>
+            <span className="ratingNum">{{book.avgRating || 0}}</span>
+            <i className="reviewIcon fa-solid fa-star-half-stroke"></i>
+          </div>
+          <p className="bookDesc">
+            {{book.desc}}
+          </p>
+        </span>
+      </span>
+      <div className="revSection">
+        <div className="revHeader">
+          <h1>
+            Reviews
+          </h1>
+        </div>
+        <app-make-review></app-make-review>
+        <app-show-review></app-show-review>
+      </div>
+    </div>
+  </div>

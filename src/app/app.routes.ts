@@ -19,7 +19,7 @@ export const routes: Routes = [
         title: 'Home'
     },
     {
-        path: 'book/:bookId/details',
+        path: 'book/:bookId',
         component: DetailsComponent,
         title: 'Details'
     },
@@ -30,6 +30,11 @@ export const routes: Routes = [
     },
     {
         path: 'store',
+        component: StoreComponent,
+        title: 'Store'
+    },
+    {
+        path: 'store/:sType+:sParam',
         component: StoreComponent,
         title: 'Store'
     },
