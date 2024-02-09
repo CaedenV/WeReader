@@ -1,0 +1,31 @@
+.results{
+    margin-top: 50px;
+}
+
+.searchArea{
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+}
+.s{
+    font-size: 20px;
+    margin-left: 5px;
+    color: white;
+    background-color: rgb(164, 139, 214);
+    border-radius: 5px;
+    border-style: dashed;
+}
+:focus{
+    outline: none;
+}
+
+.searchIcon{
+    margin-left: 5px;
+    color: mediumpurple;
+    background-color: white;
+    font-size: 23px;
+    border: 1px solid mediumpurple;
+    border-radius: 5px;
+    cursor: pointer;
+}

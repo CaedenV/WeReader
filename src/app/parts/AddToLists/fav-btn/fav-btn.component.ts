@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Book } from '../../../book';
+import { User } from '../../../user';
 
 @Component({
   selector: 'app-fav-btn',
@@ -8,5 +10,10 @@ import { Component } from '@angular/core';
   styleUrl: '../addBtn.css'
 })
 export class FavBtnComponent {
+  @Input() user!: User;
+  @Input() book!: Book;
+  
+  favClick() {
 
+  }
 }

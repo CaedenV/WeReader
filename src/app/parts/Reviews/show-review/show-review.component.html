@@ -1,1 +1,10 @@
-<p>show-review works!</p>
+<div className="review">
+    <span className="reviewTitle">
+        {{rev.title}} : {{rev.rating}}
+        <i className="reviewIcon fa-solid fa-star-half-stroke"></i>
+    </span>
+    <hr />
+    <p className="revDesc">
+        {{rev.text}}
+    </p>
+</div>

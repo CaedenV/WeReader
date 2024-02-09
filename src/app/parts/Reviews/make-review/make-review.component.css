@@ -1,0 +1,53 @@
+.make{
+    padding-top: 10;
+    margin: 0px 25px 40px 25px;
+    position: relative;
+}
+
+div{
+    display: flex;
+    margin-right: 5px;
+}
+section{
+    margin-bottom: 10px;
+}
+.revSubmit{
+    margin-left: 25px;
+    align-self: center;
+    color: rgb(104, 76, 161);
+    cursor: pointer;
+    font-size: 25px;
+}
+input{
+    font-size: 30px;
+    font-family: 'Lora', serif;
+    padding: 10px;
+    background-color: transparent;
+    border: none;
+    color: rgb(104, 76, 161);
+}
+:focus{
+    outline: none;
+}
+.starRev {
+    display: flex;
+    list-style: none;
+}
+li {
+    cursor: pointer;
+    font-size: 30px;
+}
+textarea{
+    height: 120px;
+    width:90vh;
+    margin-left: 80px;
+    font-size: 18px;
+    background-color: transparent;
+    border-color: rgb(120, 71, 218);
+    color: rgb(104, 76, 161);
+}
+::placeholder{
+    color: rgb(104, 76, 161);
+}
+
+

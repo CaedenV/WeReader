@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Review } from '../../../review';
 
 @Component({
   selector: 'app-show-review',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './show-review.component.css'
 })
 export class ShowReviewComponent {
-
+  @Input() rev!: Review;
 }

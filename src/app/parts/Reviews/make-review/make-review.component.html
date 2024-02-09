@@ -1,1 +1,18 @@
-<p>make-review works!</p>
+<section className="make">
+    <form [formGroup]="reviewForm" (submit)="handleSubmit()">
+        <div className="makeRevGrp">
+            <input placeholder="Title" className="revTitle" type="text" formControlName="revTitle" />
+            <ul class="starRev">
+                <li value="1" formControlName="revValue"><i class="fa-regular fa-star"></i></li>
+                <li value="2" formControlName="revValue"><i class="fa-regular fa-star"></i></li>
+                <li value="3" formControlName="revValue"><i class="fa-regular fa-star"></i></li>
+                <li value="4" formControlName="revValue"><i class="fa-regular fa-star"></i></li>
+                <li value="5" formControlName="revValue"><i class="fa-regular fa-star"></i></li>
+            </ul>
+            <i class="revSubmit fa-solid fa-pen-nib" (click)="handleSubmit()"></i>
+        </div>
+        <br/>
+        <textarea className="revText" placeholder="Tell us what you think!" formControlName="revText"
+            id="revText"></textarea>
+    </form>
+</section>

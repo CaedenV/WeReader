@@ -6,5 +6,6 @@ export interface Book {
     pubDate: string,
     genre: string,
     desc: string,
-    avgRating: number
+    avgRating: number,
+    wordCount: number
 }

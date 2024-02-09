@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { WishBtnComponent } from '../../parts/AddToLists/wish-btn/wish-btn.component';
 import { OwnBtnComponent } from '../../parts/AddToLists/own-btn/own-btn.component';
 import { FavBtnComponent } from '../../parts/AddToLists/fav-btn/fav-btn.component';
 import { Book } from '../../book';
 import { User } from '../../user';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ShowReviewComponent } from '../../parts/Reviews/show-review/show-review.component';
 import { MakeReviewComponent } from '../../parts/Reviews/make-review/make-review.component';
@@ -20,4 +20,9 @@ import { MakeReviewComponent } from '../../parts/Reviews/make-review/make-review
 export class DetailsComponent {
   @Input() user!: User;
   @Input() book!: Book;
+  route: ActivatedRoute = inject(ActivatedRoute);
+  
+  constructor() {
+    const bookId = Number(this.route.snapshot.params["bookId"]);
+  }
 }

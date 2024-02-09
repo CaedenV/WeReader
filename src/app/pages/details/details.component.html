@@ -16,10 +16,11 @@
             <span className="split">|</span>
             <span className="bookPub">{{book.pubDate}}</span>
             <span className="split">|</span>
-            <i className="bookLen fa-solid fa-scroll"></i>
+            <span className="bookWord"><b>{{book.wordCount}}</b></span>
+            <i class="bookLen fa-solid fa-scroll"></i>
             <span className="split">|</span>
             <span className="ratingNum">{{book.avgRating || 0}}</span>
-            <i className="reviewIcon fa-solid fa-star-half-stroke"></i>
+            <i class="reviewIcon fa-solid fa-star-half-stroke"></i>
           </div>
           <p className="bookDesc">
             {{book.desc}}
