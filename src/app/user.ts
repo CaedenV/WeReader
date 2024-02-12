@@ -7,5 +7,4 @@ export interface User {
     pic: string,
     favGenre: string,
     nowRead: Book,
-    logIn: boolean,
 }
