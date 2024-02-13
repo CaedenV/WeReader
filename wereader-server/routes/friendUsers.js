@@ -12,7 +12,8 @@ function createRouter(db) {
             return res.status(401).send({ error: 'Unauthorized: No token provided.' });
         }
         try {
-            let friends = req.body;
+            const decoded = jwt.verify(token, secretKey);
+            let friends = decoded.body.friends;
             let sql = 'INSERT INTO friendusers SET ?';
             db.query(sql, friends, (err, result) => {
                 if (err) throw err;
@@ -33,12 +34,11 @@ function createRouter(db) {
         try {
             // Verify the token and decode the payload
             const decoded = jwt.verify(token, secretKey);
-            const userId = decoded.id;
-
+            const userId = decoded.params.userId;
             let sql = `SELECT u.userName FROM friendusers f
-                  JOIN users u ON f.userId = u.id
-                  WHERE f.friendId = ${req.params.userId} AND (f.userId = ${userId} OR u.id = ${userId})`;
-            db.query(sql, (err, result) => {
+                  JOIN users u ON f.friendId = u.id
+                  WHERE f.userId = ?`;
+            db.query(sql, userId, (err, result) => {
                 if (err) throw err;
                 res.send(result);
             });
@@ -55,9 +55,8 @@ function createRouter(db) {
         }
         try {
             const decoded = jwt.verify(token, secret);
-            let sql = `DELETE FROM friendusers WHERE userId = ${decoded.userId}
-            AND friendId = ${decoded.friendId}`;
-            db.query(sql, (err, result) => {
+            let sql = `DELETE FROM friendusers WHERE userId = ? AND friendId = ?`;
+            db.query(sql, [decoded.body.userId, decoded.body.friendId], (err, result) => {
                 if (err) throw err;
                 res.send(result);
             });

@@ -18,26 +18,27 @@ function createRouter(db) {
     if (!token) {
       return res.status(401).send({ error: 'Unauthorized: No token provided.' });
     }
-    try {
-      const { userName, password } = req.body;
-      const hashedPassword = hashPassword(password);
-      const sql = `INSERT INTO users (userName, password,) VALUES (?, ?)`;
-      db.query(sql, [userName, hashedPassword, nowRead], (err, result) => {
-        if (err) {
-          res.status(500).send({ error: 'Internal server error' });
-          return;
-        }
-        res.send({ message: 'User registered successfully' });
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
-    }
-
+    const { userName, password } = req.body;
+    const hashedPassword = hashPassword(password);
+    const sql = `INSERT INTO users (userName, password) VALUES (?, ?)`;
+    db.query(sql, [userName, hashedPassword], (err, result) => {
+      if (err) {
+        res.status(500).send({ error: 'Internal server error' });
+        return;
+      }
+      const userId = result.insertId; // Get the ID of the inserted user
+      const payload = { // Generates a JWT token
+        id: userId,
+        userName: userName,
+      };
+      const token = jwt.sign(payload, secret, { expiresIn: '1h' });
+      res.send({ message: 'User registered successfully', token, userId });
+    });
   });
 
-  router.post('/login', (req, res) => {
+  router.post('/api/users/login', (req, res) => {
     const { userName, password } = req.body;
-
+  
     // Check if the user exists in the database
     const sql = `SELECT * FROM users WHERE userName = ?`;
     db.query(sql, [userName], (err, result) => {
@@ -52,7 +53,7 @@ function createRouter(db) {
       // Compare the password with the stored hash
       const user = result[0];
       const isPasswordValid = bcrypt.compareSync(password, user.password);
-
+  
       if (!isPasswordValid) {
         res.status(401).send({ error: 'Incorrect username or password' });
         return;
@@ -62,7 +63,7 @@ function createRouter(db) {
         userName: user.userName,
       };
       const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-      res.send({ token });// Sends the token to the client
+      res.send({ token }); // Sends the token to the client
     });
   });
 
@@ -74,7 +75,7 @@ function createRouter(db) {
     try {
       const decoded = jwt.verify(token, secret);
       let sql = `UPDATE users SET ? WHERE id = ?`;
-      db.query(sql, [decoded.id], (err, result) => {
+      db.query(sql, [decoded.params.id], (err, result) => {
         if (err) throw err;
         res.send('User Profile updated...');
       });
@@ -91,7 +92,7 @@ function createRouter(db) {
     try {
       const decoded = jwt.verify(token, secret);
       let sql = `DELETE FROM users WHERE id = ?`;
-      db.query(sql, [decoded.id], (err, result) => {
+      db.query(sql, [decoded.params.id], (err, result) => {
         if (err) throw err;
         res.send('User Profile deleted...');
       });
