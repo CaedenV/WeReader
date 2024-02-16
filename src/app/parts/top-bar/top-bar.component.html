@@ -4,10 +4,10 @@
     </div>
     <div class="middle">
         <ul class="tabs">
-            <li class="tab"><a [routerLink]="['/user/home', user.id]" class="home">HOME</a></li>
-            <li class="tab"><a [routerLink]="['/book/read', book.id]" class="read">READ</a></li>
+            <li class="tab"><a [routerLink]="['/user/', user.id, '/home']" class="home">HOME</a></li>
+            <li class="tab"><a [routerLink]="['/book/', user.nowRead, '/read']" class="read">READ</a></li>
             <li class="tab"><a [routerLink]="['/store']" class="store">STORE</a></li>
-            <li class="tab"><a [routerLink]="['/user/library', user.id]" class="library">LIBRARY</a></li>
+            <li class="tab"><a [routerLink]="['/user/', user.id,'/library']" class="library">LIBRARY</a></li>
         </ul>
     </div>
     <div class="right">

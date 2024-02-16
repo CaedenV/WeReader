@@ -1,62 +1,64 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const secret = process.env.JWT_SECRET;
+const connection = require('../connection');
+const router = express.Router();
+var auth = require('../services/authentication');
 
-function createRouter(db) {
-    const router = express.Router();
-
-    router.post('/api/notifs', (req, res) => {
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.post('/add', auth.authenticateToken, (req, res) => {
+    let notif = req.body;
+    var query = "insert into notifs (senderId, receiverId, bookId, notifRead) values (?,?,?, '0')";
+    connection.query(query, [notif.sender, notif.receiver, notif.bookId], (err, results) => {
+        if (!err) {
+            return res.status(200).json({ message: "Notif Posted Successfully." });
         }
-        try {
-            const decoded = jwt.verify(token, secret);
-            let sql = 'INSERT INTO notifs SET ?';
-            db.query(sql, [decoded.body.notif], (err, result) => {
-                if (err) throw err;
-                res.send('Notif posted...', result);
-            });
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+        else {
+            return res.status(500).json(err);
         }
     });
+})
 
-    router.get('/api/notifs/:userId', (req, res) => {
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.get('/getByUser/:id', auth.authenticateToken, (req, res) => {
+    const id = req.params.id;
+    var query = "select senderId, bookId, notifRead from notifs where receiverId = ?";
+    connection.query(query, [id], (err, results) => {
+        if (!err) {
+            return res.status(200).json(results);
         }
-        try {
-            const decoded = jwt.verify(token, secret);
-            let sql = `SELECT senderId, bookId FROM notifs WHERE receiverId = ?`;
-            db.query(sql, [decoded.params.userId], (err, result) => {
-                if (err) throw err;
-                res.send(result);
-            });
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+        else {
+            return res.status(500).json(err);
         }
     });
+})
 
-    router.delete('/api/notifs/:userId', (req, res) => {
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.patch('/read', auth.authenticateToken, (req, res, next) => {
+    let notif = req.body;
+    var query = "update notifs set notifRead = ? where receriverId = ?";
+    connection.query(query, [notif.notifRead, notif.userId], (err, results) => {
+        if (!err) {
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ message: "Notif Id was not found." });
+            }
+            return res.status(200).json({ message: "Notif Read Successfully." });
         }
-        try {
-            const decoded = jwt.verify(token, secret);
-            let sql = `DELETE FROM notifs WHERE receiverId = ? AND bookId = ?`;
-            db.query(sql, [decoded.params.userId, decoded.body.bookId], (err, result) => {
-                if (err) throw err;
-                res.send(result);
-            });
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+        else {
+            return res.status(500).json(err);
         }
     });
+})
 
-    return router;
-}
+router.delete('/delete/:id', auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    var query = "delete from notifs where id = ?";
+    connection.query(query, [id], (err, results) => {
+        if (!err) {
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ message: "Notif Id not found." });
+            }
+            return res.status(200).json({ message: "Notif Deleted Successfully." });
+        }
+        else {
+            return res.status(500).json(err);
+        }
+    });
+})
 
-module.exports = createRouter;
+module.exports = router;

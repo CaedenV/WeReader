@@ -1,83 +1,47 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const secret = process.env.JWT_SECRET;
+const connection = require('../connection');
+const router = express.Router();
+var auth = require('../services/authentication');
 
-function createRouter(db) {
-  const router = express.Router();
-
-  router.post('/api/books', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.post('/add', auth.authenticateToken, (req, res) => {
+  let book = req.body;
+  var query = "insert into books (cover, title, author, pubDate, genre, desc, avgRating, wordCount) values (?,?,?,?,?,?,?,?)";
+  connection.query(query, [book.cover, book.title, book.author, book.pubDate, book.genre, book.desc, book.avgRating, book.wordCount], (err, results) => {
+    if (!err) {
+      return res.status(200).json({ message: "Book Added Successfully." });
     }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let book = decoded.body;
-      let sql = 'INSERT INTO books SET ?';
-      db.query(sql, book, (err, result) => {
-        if (err) throw err;
-        res.send('Book added...');
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+    else {
+      return res.status(500).json(err);
     }
   });
+})
 
-  router.get('/api/books/:sParam', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.get('/getByParam/:sParam/:sQuery', auth.authenticateToken, (req, res) => {
+  const param = req.params.sParam;
+  const search = req.params.sQuery;
+
+  let sql = `SELECT * FROM books WHERE ? = ?`;
+  connection.query(sql, [param, search], (err, results) => {
+    if (!err)  {
+      return res.status(200).json(results);
     }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let sql = `SELECT * FROM books WHERE ? = ?`;
-      db.query(sql, [decoded.params.sParam, decoded.body.sQuery], (err, result) => {
-        if (err) throw err;
-        res.send(result);
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+    else {
+      return res.status(500).json(err);
     }
   });
+})
 
-  router.get('/api/books/:id', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
-    }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let sql = `SELECT * FROM books WHERE id = ?`;
-      db.query(sql, [decoded.params.id], (err, result) => {
-        if (err) throw err;
-        res.send(result);
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
-    }
+router.get('/getById/:id',auth.authenticateToken, (req, res) => {
+  const id = req.params.id;
+  var query = "select cover, title, author, pubDate, genre, desc, avgRating, wordCount from books where id = ?";
+  connection.query(query, [id], (err, results) => {
+      if (!err) {
+          return res.status(200).json(results[0]);
+      }
+      else {
+          return res.status(500).json(err);
+      }
   });
+})
 
-  router.put('/api/books/:id', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
-    }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let book = decoded.body.book;
-      let bookId = decoded.params.id;
-      let sql = `UPDATE books SET ? WHERE id = ${bookId}`;
-      db.query(sql, book, (err, result) => {
-        if (err) throw err;
-        res.send('Book updated...');
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
-    }
-
-  });
-
-  return router;
-}
-
-module.exports = createRouter;
+module.exports = router;

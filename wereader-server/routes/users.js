@@ -1,7 +1,12 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
+const connection = require('../connection');
+const router = express.Router();
+const image = require('../../src/assets/default');
+
 const jwt = require('jsonwebtoken');
-const secret = process.env.JWT_SECRET;
+require('dotenv').config();
+var auth = require('../services/authentication');
+const bcrypt = require('bcryptjs');
 
 const hashPassword = (password) => {
   const salt = bcrypt.genSaltSync(10);
@@ -9,99 +14,98 @@ const hashPassword = (password) => {
   return hash;
 };
 
-function createRouter(db) {
-  const router = express.Router();
 
-  router.post('/api/users/register', (req, res) => {
-    // Check for a valid token in the request headers
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.post('/register', (req, res) => {
+  const { userName, password } = req.body;
+  const hashedPassword = hashPassword(password);
+  query = "select userName, password from users where userName =?"
+  connection.query(query, [userName], (error, result) => {
+    if (!error) {
+      if (result.length <= 0) {
+        query = "insert into users (userName, password, pic) values (?,?,?)";
+        connection.query(query, [userName, hashedPassword, image], (err, results) => {
+          if (!err) {
+            return res.status(200).json({ message: "Successfully Registered." });
+          }
+          else {
+            return res.status(500).json(err);
+          }
+        });
+      }
+      else {
+        return res.status(400).json({ message: "Username already exists." })
+      }
     }
-    const { userName, password } = req.body;
-    const hashedPassword = hashPassword(password);
-    const sql = `INSERT INTO users (userName, password) VALUES (?, ?)`;
-    db.query(sql, [userName, hashedPassword], (err, result) => {
-      if (err) {
-        res.status(500).send({ error: 'Internal server error' });
-        return;
-      }
-      const userId = result.insertId; // Get the ID of the inserted user
-      const payload = { // Generates a JWT token
-        id: userId,
-        userName: userName,
-      };
-      const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-      res.send({ message: 'User registered successfully', token, userId });
-    });
-  });
-
-  router.post('/api/users/login', (req, res) => {
-    const { userName, password } = req.body;
-  
-    // Check if the user exists in the database
-    const sql = `SELECT * FROM users WHERE userName = ?`;
-    db.query(sql, [userName], (err, result) => {
-      if (err) {
-        res.status(500).send({ error: 'Internal server error' });
-        return;
-      }
-      if (result.length === 0) {
-        res.status(401).send({ error: 'Incorrect username or password' });
-        return;
-      }
-      // Compare the password with the stored hash
-      const user = result[0];
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
-  
-      if (!isPasswordValid) {
-        res.status(401).send({ error: 'Incorrect username or password' });
-        return;
-      }
-      const payload = { // Generates a JWT token
-        id: user.id,
-        userName: user.userName,
-      };
-      const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-      res.send({ token }); // Sends the token to the client
-    });
-  });
-
-  router.put('/api/users/:id', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
-    }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let sql = `UPDATE users SET ? WHERE id = ?`;
-      db.query(sql, [decoded.params.id], (err, result) => {
-        if (err) throw err;
-        res.send('User Profile updated...');
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+    else {
+      return res.status(500).json(error);
     }
   });
+})
 
-  router.delete('/api/users/:id', (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.post('/login', (req, res) => {
+  let user = req.body;
+  query = "select userName, password from users where userName=?";
+  connection.query(query, [user.userName], (err, result) => {
+    if (!err) {
+      if (results.length <= 0 || results[0].password != user.password) {
+        return res.status(401).json({ message: "Incorrect Username or Password." });
+      }
+      else if (results[0].password == user.password) {
+        const response = {
+          userName: results[0].userName,
+        };
+        const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' })
+        res.status(200).json({ token: accessToken });
+      }
+      else {
+        return res.status(400).json({ message: "Something went wrong. Please try again later" });
+      }
     }
-    try {
-      const decoded = jwt.verify(token, secret);
-      let sql = `DELETE FROM users WHERE id = ?`;
-      db.query(sql, [decoded.params.id], (err, result) => {
-        if (err) throw err;
-        res.send('User Profile deleted...');
-      });
-    } catch (err) {
-      return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+    else {
+      return res.status(500).json(err);
+    }
+  })
+})
+
+router.get('/get', auth.authenticateToken, (req, res) => {
+  var query = "select id, userName, pic, favGenre, nowRead from users";
+  connection.query(query, (err, results) => {
+    if (!err) {
+      return response.status(200).json(results);
+    }
+    else {
+      return res.status(500).json(err);
     }
   });
+})
 
-  return router;
-}
+router.get('/getById/:id', auth.authenticateToken, (req, res) => {
+  const id = req.params.id;
+  var query = "select userName, pic, favGenre, nowRead from users where id = ?";
+  connection.query(query, [id], (err, results) => {
+    if (!err) {
+      return response.status(200).json(results[0]);
+    }
+    else {
+      return res.status(500).json(err);
+    }
+  });
+})
 
-module.exports = createRouter;
+router.patch('/update', auth.authenticateToken, (req, res) => {
+  let user = req.body;
+  var query = "update user set pic=?,favGenre=?,nowRead=? where id=?";
+  connection.query(query, [user.pic, user.favGenre, user.nowRead, user.id], (err, results) => {
+      if (!err) {
+          if (res.affectedRows == 0) {
+              return res.status(404).json({ message: "User Id does not exist." });
+          }
+          return res.status(200).json({ message: "User updated successfully" });
+      }
+      else {
+          return res.status(500).json(err);
+      }
+  });
+})
+
+module.exports = router;;

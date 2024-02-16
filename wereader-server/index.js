@@ -1,45 +1,27 @@
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const mysql = require('mysql');
-const dotenv = require('dotenv');
+var cors = require('cors');
 
-const users = require('./routes/users');
-const books = require('./routes/books');
-const favbooks = require('./routes/favBooks');
-const friendusers = require('./routes/friendUsers');
-const notifs = require('./routes/notifs');
-const ownedbooks = require('./routes/ownedBooks');
-const wishedbooks = require('./routes/wishedBooks');
-const reviews = require('./routes/reviews');
+const usersRoute = require('./routes/users');
+const booksRoute = require('./routes/books');
+const favBooksRoute = require('./routes/favBooks');
+const friendsRoute = require('./routes/friendUsers');
+const notifsRoute = require('./routes/notifs');
+const ownedBooksRoute = require('./routes/ownedBooks');
+const wishedBooksRoute = require('./routes/wishedBooks');
+const reviewsRoute = require('./routes/reviews');
+const app = express();
 
-dotenv.config();
+app.use(cors());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+app.use('/users', usersRoute);
+app.use('/books', booksRoute);
+app.use('/fav', favBooksRoute);
+app.use('/wish', wishedBooksRoute);
+app.use('/own', ownedBooksRoute);
+app.use('/friends', friendsRoute);
+app.use('/notif', notifsRoute);
+app.use('/revs', reviewsRoute);
 
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE
-});
 
-connection.connect();
-
-const router = express.Router();
-
-router.use('/users', users(connection));
-router.use('/books', books(connection));
-router.use('/favbooks', favbooks(connection));
-router.use('/friendusers', friendusers(connection));
-router.use('/notifs', notifs(connection));
-router.use('/ownedbooks', ownedbooks(connection));
-router.use('/reviews', reviews(connection));
-router.use('/wishedbooks', wishedbooks(connection));
-
-const app = express()
-  .use(cors())
-  .use(bodyParser.json())
-  .use('/api', router);
-
-app.listen(3306, () => {
-  console.log('Express server listening on port 3306');
-});
+module.exports = app;

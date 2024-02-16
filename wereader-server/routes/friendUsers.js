@@ -1,71 +1,48 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const secretKey = process.env.JWT_SECRET;
+const connection = require('../connection');
+const router = express.Router();
+var auth = require('../services/authentication');
 
-function createRouter(db) {
-    const router = express.Router();
-
-    router.post('/api/friendusers', (req, res) => {
-        // Check for a valid token in the request headers
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.post('/add', auth.authenticateToken, (req, res) => {
+    let friends = req.body;
+    var query = "insert into friendusers (userId, friendId) values (?,?)";
+    connection.query(query, [friends.userId, friends.friendId], (err, results) => {
+        if (!err) {
+            return res.status(200).json({ message: "Friend Added Successfully." });
         }
-        try {
-            const decoded = jwt.verify(token, secretKey);
-            let friends = decoded.body.friends;
-            let sql = 'INSERT INTO friendusers SET ?';
-            db.query(sql, friends, (err, result) => {
-                if (err) throw err;
-                res.send('Friend added...', result);
-            });
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
-        }
-
-    });
-
-    router.get('/api/friendusers/:userId', (req, res) => {
-        // Check for a valid token in the request headers
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
-        }
-        try {
-            // Verify the token and decode the payload
-            const decoded = jwt.verify(token, secretKey);
-            const userId = decoded.params.userId;
-            let sql = `SELECT u.userName FROM friendusers f
-                  JOIN users u ON f.friendId = u.id
-                  WHERE f.userId = ?`;
-            db.query(sql, userId, (err, result) => {
-                if (err) throw err;
-                res.send(result);
-            });
-
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+        else {
+            return res.status(500).json(err);
         }
     });
+})
 
-    router.delete('/api/friendusers', (req, res) => {
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).send({ error: 'Unauthorized: No token provided.' });
+router.get('/getById/:id', auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    var query = "SELECT u.userName FROM friendusers f JOIN users u ON f.friendId = u.id WHERE f.userId = ?";
+    connection.query(query, [id], (err, results) => {
+        if (!err) {
+            return res.status(200).json(results);
         }
-        try {
-            const decoded = jwt.verify(token, secret);
-            let sql = `DELETE FROM friendusers WHERE userId = ? AND friendId = ?`;
-            db.query(sql, [decoded.body.userId, decoded.body.friendId], (err, result) => {
-                if (err) throw err;
-                res.send(result);
-            });
-        } catch (err) {
-            return res.status(401).send({ error: 'Unauthorized: Invalid token.' });
+        else {
+            return res.status(500).json(err);
         }
     });
+})
 
-    return router;
-}
+router.delete('/delete', auth.authenticateToken, (req, res, next) => {
+    const {userId, friendId} = req.body;
+    var query = "delete from friendusers where userId = ? and friendId = ?";
+    connection.query(query, [userId, friendId], (err, results) => {
+        if (!err) {
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ message: "Friend Id not found." });
+            }
+            return res.status(200).json({ message: "Friend Removed Successfully" });
+        }
+        else {
+            return res.status(500).json(err);
+        }
+    });
+})
 
-module.exports = createRouter;
+module.exports = router;
